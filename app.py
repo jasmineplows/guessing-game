@@ -19,9 +19,8 @@ ACTUAL_COUNT = 735  # The actual number of items in the jar
 st.title("Guess the Number of Items in the Jar!")
 
 # -- Display your image/slide --
-# Replace 'image.png' with the actual file name or URL to your image.
 st.image(
-    "image.png",
+    "image.jpg",
     caption="How many items do you think are in this 1/2 gallon jar?",
     use_column_width=True
 )

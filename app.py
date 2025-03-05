@@ -22,7 +22,7 @@ st.title("Guess the Number of Items in the Jar!")
 st.image(
     "image.jpg",
     caption="How many items do you think are in this 1/2 gallon jar?",
-    use_column_width=True
+    use_container_width=True
 )
 
 st.markdown(

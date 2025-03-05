@@ -26,8 +26,8 @@ with col1:
     st.image(
         "image.jpg",
         caption="How many items do you think are in this 1/2 gallon jar?",
-        width=200
-        # use_container_width=True
+        width=200,
+        use_container_width=True
     )
 
 with col2:

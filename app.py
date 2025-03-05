@@ -15,44 +15,49 @@ if "reveal_count" not in st.session_state:
 
 ACTUAL_COUNT = 735  # The actual number of items in the jar
 
-# -- App Title --
-st.title("Guess the Number of Items in the Jar!")
+# Create two columns: one for the image (col1) and one for the instructions & inputs (col2)
+col1, col2 = st.columns([2, 1])  # Adjust ratios [2, 1] as desired
 
-# -- Display your image/slide --
-st.image(
-    "image.jpg",
-    caption="How many items do you think are in this 1/2 gallon jar?",
-    use_container_width=True
-)
+with col1:
+    # -- App Title --
+    st.title("Guess the Number of Items in the Jar!")
 
-st.markdown(
-    """
-    **Instructions**:
-    1. Enter your guess in the box below.
-    2. Click **Submit Guess**.
-    3. Once everyone has guessed, click **Generate Plot** to see the guesses.
-    4. Click **Reveal Actual Count** when you're ready to show the real number.
-    """
-)
+    # -- Display your image/slide --
+    st.image(
+        "image.jpg",
+        caption="How many items do you think are in this 1/2 gallon jar?",
+        use_container_width=True
+    )
 
-# -- Input for user guess --
-guess = st.number_input("Enter your guess:", min_value=0, max_value=10000, value=0)
+with col2:
+    st.markdown(
+        """
+        **Instructions**:
+        1. Enter your guess in the box below.
+        2. Click **Submit Guess**.
+        3. Once everyone has guessed, click **Generate Plot** to see the guesses.
+        4. Click **Reveal Actual Count** when you're ready to show the real number.
+        """
+    )
 
-# -- Button to submit a guess --
-if st.button("Submit Guess"):
-    st.session_state["guesses"].append(guess)
-    st.success("Your guess has been submitted!")
+    # -- Input for user guess --
+    guess = st.number_input("Enter your guess:", min_value=0, max_value=10000, value=0)
 
-# -- Button to show the histogram (without revealing actual count) --
-if st.button("Generate Plot"):
-    if len(st.session_state["guesses"]) == 0:
-        st.warning("No guesses have been submitted yet!")
-    else:
-        st.session_state["show_plot"] = True
+    # -- Button to submit a guess --
+    if st.button("Submit Guess"):
+        st.session_state["guesses"].append(guess)
+        st.success("Your guess has been submitted!")
 
-# -- Button to reveal the actual count --
-if st.button("Reveal Actual Count"):
-    st.session_state["reveal_count"] = True
+    # -- Button to show the histogram (without revealing actual count) --
+    if st.button("Generate Plot"):
+        if len(st.session_state["guesses"]) == 0:
+            st.warning("No guesses have been submitted yet!")
+        else:
+            st.session_state["show_plot"] = True
+
+    # -- Button to reveal the actual count --
+    if st.button("Reveal Actual Count"):
+        st.session_state["reveal_count"] = True
 
 # -- Show the plot if requested --
 if st.session_state["show_plot"] and len(st.session_state["guesses"]) > 0:

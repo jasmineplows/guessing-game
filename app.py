@@ -140,7 +140,7 @@ if store["show_plot"] and len(store["guesses"]) > 0:
     median_guess = np.median(all_guesses)
 
     fig, ax = plt.subplots(figsize=(7, 4))
-    ax.hist(all_guesses, bins=20, color='skyblue', edgecolor='black', alpha=0.7)
+    ax.hist(all_guesses, bins='auto', color='skyblue', edgecolor='black', alpha=0.7)
 
     # Mean & median lines
     ax.axvline(mean_guess, color='green', linestyle='-', linewidth=2,

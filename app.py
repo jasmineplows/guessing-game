@@ -58,10 +58,12 @@ def login_as_host():
 # -------------------------------------------------
 # 4. LAYOUT
 # -------------------------------------------------
-col_left, col_right = st.columns([2, 1])
+col_left, col_centr, col_right = st.columns([2, 2, 2])
 
 with col_left:
     st.title("Guess the Number of Items in the Jar!")
+    
+with col_centr:
     st.image("image.jpg", width=300)
 
 

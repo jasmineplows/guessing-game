@@ -62,7 +62,7 @@ col_left, col_right = st.columns([2, 1])
 
 with col_left:
     st.title("Guess the Number of Items in the Jar!")
-    st.image("image.jpg", width=400)
+    st.image("image.jpg", width=300)
 
 
 with col_right:

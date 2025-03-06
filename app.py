@@ -10,16 +10,16 @@ import string
 @st.cache_resource
 def get_store():
     """
-    Returns a single global dictionary shared by all active users.
+    Returns a single global dictionary shared by all active user sessions.
     Structure:
       store["guesses"] -> { session_id: guess_value, ... }
-      store["show_plot"] -> bool
+      store["public_show_plot"] -> bool
       store["reveal_count"] -> bool
     """
     return {
         "guesses": {},
-        "show_plot": False,
-        "reveal_count": False,
+        "public_show_plot": False,  # controls if *everyone* sees the histogram
+        "reveal_count": False,      # controls if *everyone* sees the actual count line
     }
 
 # ----------------------------------------
@@ -47,29 +47,36 @@ store = get_store()
 session_id = get_session_id()
 
 # ----------------------------------------
-# 4) HOST MODE / PASSWORD
+# 4) IS THIS USER THE HOST?
 # ----------------------------------------
-# We'll keep it very simple: if you type the correct password, you're "the host."
-# That lets you control "Generate Plot" and "Reveal Count."
+# We'll keep it simple: a password field. If correct, this session becomes "host."
 if "is_host" not in st.session_state:
     st.session_state["is_host"] = False
 
-def host_login():
-    """Set is_host = True if the password is correct."""
+def attempt_host_login():
     pwd = st.session_state.get("host_password_input", "")
-    if pwd == "secret123":  # <--- You can change this!
+    if pwd == "secret123":  # <--- Change this to whatever password you like
         st.session_state["is_host"] = True
-        st.success("You are now in Host mode!")
+        st.success("You are now the Host!")
     else:
-        st.error("Incorrect password!")
+        st.error("Wrong password!")
 
 # ----------------------------------------
-# 5) TWO-COLUMN LAYOUT
+# 5) HOST-ONLY (PRIVATE) PLOT PREVIEW TOGGLE
+# ----------------------------------------
+# The host can generate a PRIVATE preview of the plot that only they see.  
+# This is stored in the host's st.session_state, *not* in the global store.
+if "private_plot_host" not in st.session_state:
+    st.session_state["private_plot_host"] = False
+
+# ----------------------------------------
+# 6) LAYOUT: TWO COLUMNS
 # ----------------------------------------
 col_left, col_right = st.columns([2, 1])
 
 with col_left:
     st.title("Guess the Number of Items in the Jar!")
+
     # A smaller, centered image
     st.markdown(
         """
@@ -87,76 +94,21 @@ with col_right:
         """
         1. Enter your guess below.
         2. Click **Submit Guess**.
-        3. Wait until the host reveals the results!
+        3. Wait until the host decides to show the results!
         """
     )
 
-    # Submit guess
     guess = st.number_input("Enter your guess:", min_value=0, max_value=100000, value=0)
     if st.button("Submit Guess"):
-        store["guesses"][session_id] = guess  # store/overwrite the guess for this user
-        st.success("Guess submitted!")
+        # Store guess in the global dictionary, keyed by session_id
+        store["guesses"][session_id] = guess
+        st.success("Your guess has been submitted!")
 
     st.write("---")
-
-    # Host login form
     st.subheader("Host Login (optional)")
     st.text_input("Enter Host Password:", key="host_password_input", type="password")
     if st.button("Login as Host"):
-        host_login()
+        attempt_host_login()
 
 # ----------------------------------------
-# 6) IF HOST: SHOW HOST-ONLY CONTROLS
-# ----------------------------------------
-if st.session_state["is_host"]:
-    st.write("---")
-    st.subheader("Host Controls")
-    st.markdown(
-        """
-        As the host, you can generate the plot (histogram of guesses)
-        and reveal the actual count line.
-        """
-    )
-    if st.button("Generate Plot"):
-        if len(store["guesses"]) == 0:
-            st.warning("No guesses submitted yet!")
-        else:
-            store["show_plot"] = True
-
-    if st.button("Hide Plot"):
-        store["show_plot"] = False
-
-    if st.button("Reveal Actual Count"):
-        store["reveal_count"] = True
-
-    if st.button("Hide Actual Count"):
-        store["reveal_count"] = False
-
-# ----------------------------------------
-# 7) DISPLAY THE HISTOGRAM (IF ENABLED)
-# ----------------------------------------
-if store["show_plot"] and len(store["guesses"]) > 0:
-    all_guesses = np.array(list(store["guesses"].values()))
-    mean_guess = np.mean(all_guesses)
-    median_guess = np.median(all_guesses)
-
-    fig, ax = plt.subplots(figsize=(8, 4))
-    ax.hist(all_guesses, bins='auto', color='skyblue', edgecolor='black', alpha=0.7)
-
-    # Show mean & median
-    ax.axvline(mean_guess, color='green', linestyle='-', linewidth=2,
-               label=f"Mean: {mean_guess:.0f}")
-    ax.axvline(median_guess, color='green', linestyle=':', linewidth=2,
-               label=f"Median: {median_guess:.0f}")
-
-    # Show actual line only if reveal_count == True
-    if store["reveal_count"]:
-        ax.axvline(ACTUAL_COUNT, color='red', linestyle='--', linewidth=2,
-                   label=f"Actual: {ACTUAL_COUNT}")
-
-    ax.set_title("Distribution of Guesses")
-    ax.set_xlabel("Guess")
-    ax.set_ylabel("Frequency")
-    ax.legend()
-
-    st.pyplot(fig)
+# 7) IF YOU ARE THE HOST

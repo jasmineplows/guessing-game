@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # -- Page config --
-st.set_page_config(page_title="Guess the Jar Count", layout="wide")
+st.set_page_config(page_title="Guess the Jar Count", layout="centered")
 
 # -- Initialize session state variables --
 if "guesses" not in st.session_state:

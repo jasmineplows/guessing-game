@@ -120,6 +120,16 @@ if st.session_state["is_host"]:
     if st.button("Hide Actual Count from Everyone"):
         store["reveal_count"] = False
 
+    # ---------------------------------------------
+    # RESET ALL GUESSES
+    # ---------------------------------------------
+    if st.button("Reset All Guesses"):
+        store["guesses"].clear()       # Clears the dictionary of all guesses
+        store["show_plot"] = False     # Hide the plot
+        store["reveal_count"] = False  # Hide the actual count
+        st.warning("All guesses have been cleared!")
+
+
 # -------------------------------------------------
 # 6. PUBLIC PLOT (VISIBLE ONLY IF show_plot = True)
 # -------------------------------------------------

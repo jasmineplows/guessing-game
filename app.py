@@ -4,54 +4,54 @@ import matplotlib.pyplot as plt
 import random
 import string
 
-# -----------------------
-# SHARED GLOBAL DATA STORE
-# -----------------------
+# -----------------------------------------------------
+# 1. SHARED GLOBAL DATA STORE (in-memory for all users)
+# -----------------------------------------------------
 @st.cache_resource
 def get_global_data():
-    """Returns a dictionary {session_id -> guess} shared across all active user sessions."""
+    """A dictionary mapping user session_ids -> their submitted guess."""
     return {}
 
-# -----------------------
-# HELPERS
-# -----------------------
+# -----------------------------------------------------
+# 2. GENERATE/RETRIEVE A UNIQUE SESSION ID FOR EACH USER
+# -----------------------------------------------------
 def get_session_id():
-    """Assign a random session ID to each user session (stored in st.session_state)."""
+    """Creates a unique ID and stores it in st.session_state (one per user)."""
     if "session_id" not in st.session_state:
-        # Generate a random 8-character string for this session
         st.session_state.session_id = "".join(
             random.choices(string.ascii_letters + string.digits, k=8)
         )
     return st.session_state.session_id
 
-
-# -----------------------
-# STREAMLIT APP
-# -----------------------
+# -----------------------------------------------------
+# 3. STREAMLIT APP SETUP
+# -----------------------------------------------------
 st.set_page_config(page_title="Guess the Jar Count", layout="wide")
 
-ACTUAL_COUNT = 735
+ACTUAL_COUNT = 735  # The real number in the jar
 
-# Initialize toggle states
+# Initialize toggles
 if "show_plot" not in st.session_state:
     st.session_state["show_plot"] = False
 if "reveal_count" not in st.session_state:
     st.session_state["reveal_count"] = False
 
-# Get or create the shared global data
+# Retrieve the shared data store and a user-specific session_id
 global_data = get_global_data()
-
-# Each user gets a unique session ID
 session_id = get_session_id()
 
-# Create columns
+# -----------------------------------------------------
+# 4. TWO-COLUMN LAYOUT
+# -----------------------------------------------------
 col_left, col_right = st.columns([2, 1])
 
 with col_left:
+    # Title and image
     st.title("Guess the Number of Items in the Jar!")
     st.markdown(
         """
         <div style='text-align: center;'>
+            <!-- Make sure "image.jpg" is actually in the same folder as app.py -->
             <img src="image.jpg" width="300"/>
             <p><em>How many items do you think are in this 1/2 gallon jar?</em></p>
         </div>
@@ -65,47 +65,49 @@ with col_right:
         """
         1. Enter your guess below.
         2. Click **Submit Guess**.
-        3. Once everyone has guessed, the host clicks **Generate Plot** to show the guesses.
+        3. Once everyone has guessed, the host clicks **Generate Plot**.
         4. Finally, the host clicks **Reveal Actual Count** to show the real number.
         """
     )
 
+    # Input box for the guess
     guess = st.number_input("Enter your guess:", min_value=0, max_value=100000, value=0)
 
-    # SUBMIT GUESS
+    # Buttons for actions
     if st.button("Submit Guess"):
-        global_data[session_id] = guess  # store (or overwrite) this session's guess
+        # Store this user's guess in the global dictionary
+        global_data[session_id] = guess
         st.success("Your guess has been submitted!")
 
-    # GENERATE PLOT (host action)
     if st.button("Generate Plot"):
         if len(global_data) == 0:
             st.warning("No guesses have been submitted yet!")
         else:
             st.session_state["show_plot"] = True
 
-    # REVEAL ACTUAL COUNT (host action)
     if st.button("Reveal Actual Count"):
         st.session_state["reveal_count"] = True
 
-
-# DISPLAY THE HISTOGRAM IF "Generate Plot" WAS CLICKED
+# -----------------------------------------------------
+# 5. SHOW THE HISTOGRAM (ONLY AFTER 'Generate Plot')
+# -----------------------------------------------------
 if st.session_state["show_plot"] and len(global_data) > 0:
     # Collect all guesses
     all_guesses = np.array(list(global_data.values()))
     mean_guess = np.mean(all_guesses)
     median_guess = np.median(all_guesses)
 
+    # Plot
     fig, ax = plt.subplots(figsize=(8, 4))
     ax.hist(all_guesses, bins='auto', color='skyblue', edgecolor='black', alpha=0.7)
 
-    # Plot mean and median
+    # Mean & median lines
     ax.axvline(mean_guess, color='green', linestyle='-', linewidth=2,
                label=f"Mean: {mean_guess:.0f}")
     ax.axvline(median_guess, color='green', linestyle=':',
                linewidth=2, label=f"Median: {median_guess:.0f}")
 
-    # Reveal the actual count if requested
+    # The actual number is revealed ONLY if st.session_state["reveal_count"] is True
     if st.session_state["reveal_count"]:
         ax.axvline(ACTUAL_COUNT, color='red', linestyle='--', linewidth=2,
                    label=f"Actual: {ACTUAL_COUNT}")

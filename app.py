@@ -62,6 +62,7 @@ col_left, col_centr, col_right = st.columns([2, 1.5, 2])
 
 with col_left:
     st.title("Guess the Number of Items in the Jar!")
+    st.subtitle("The jar is 1/2 gallon")
     
 with col_centr:
     st.image("image.jpg", width=300)
@@ -139,7 +140,7 @@ if store["show_plot"] and len(store["guesses"]) > 0:
     median_guess = np.median(all_guesses)
 
     fig, ax = plt.subplots(figsize=(7, 4))
-    ax.hist(all_guesses, bins='auto', color='skyblue', edgecolor='black', alpha=0.7)
+    ax.hist(all_guesses, bins=20, color='skyblue', edgecolor='black', alpha=0.7)
 
     # Mean & median lines
     ax.axvline(mean_guess, color='green', linestyle='-', linewidth=2,

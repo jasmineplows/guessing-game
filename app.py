@@ -139,4 +139,17 @@ if store["show_plot"] and len(store["guesses"]) > 0:
     # Mean & median lines
     ax.axvline(mean_guess, color='green', linestyle='-', linewidth=2,
                label=f"Mean: {mean_guess:.0f}")
-    ax.axvli
+    ax.axvline(median_guess, color='green', linestyle=':',
+               linewidth=2, label=f"Median: {median_guess:.0f}")
+
+    # Show red line for the actual count if reveal_count = True
+    if store["reveal_count"]:
+        ax.axvline(ACTUAL_COUNT, color='red', linestyle='--', linewidth=2,
+                   label=f"Actual: {ACTUAL_COUNT}")
+
+    ax.set_title("Distribution of Guesses")
+    ax.set_xlabel("Guess")
+    ax.set_ylabel("Frequency")
+    ax.legend()
+    
+    st.pyplot(fig)

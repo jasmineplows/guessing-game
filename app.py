@@ -19,19 +19,17 @@ ACTUAL_COUNT = 735  # The actual number of items in the jar
 col1, col2 = st.columns([2, 1])  # Adjust ratios [2, 1] as desired
 
 with col1:
-    # -- App Title --
     st.title("Guess the Number of Items in the Jar!")
-
-    # -- Display your image/slide --
     st.markdown(
         """
         <div style='text-align: center;'>
-            <img src="image.jpg" width="400" />
+            <img src="image.jpg" width="400"/>
             <p><em>How many items do you think are in this 1/2 gallon jar?</em></p>
         </div>
         """,
         unsafe_allow_html=True
     )
+
 
 with col2:
     st.markdown(

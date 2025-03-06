@@ -62,15 +62,8 @@ col_left, col_right = st.columns([2, 1])
 
 with col_left:
     st.title("Guess the Number of Items in the Jar!")
-    st.markdown(
-        """
-        <div style='text-align: center;'>
-            <img src="image.jpg" width="250" />
-            <p><em>How many items do you think are in this jar?</em></p>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    st.image("image.jpg", width=400)
+
 
 with col_right:
     st.subheader("Instructions (Everyone):")

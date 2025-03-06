@@ -62,7 +62,7 @@ col_left, col_centr, col_right = st.columns([2, 1.5, 2])
 
 with col_left:
     st.title("Guess the Number of Items in the Jar!")
-    st.subtitle("The jar is 1/2 gallon")
+    st.subheader("The jar is 1/2 gallon")
     
 with col_centr:
     st.image("image.jpg", width=300)

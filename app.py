@@ -21,7 +21,7 @@ col1, col2 = st.columns([2, 1])  # Adjust ratios [2, 1] as desired
 with col1:
     st.title("Guess the Number of Items in the Jar!")
     
-    st.image("image.jpg", width="400")
+    st.image("image.jpg", width=400)
 
 with col2:
     st.markdown(
